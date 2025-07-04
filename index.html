@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabaña84 - Lista de Requerimientos Diaria</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #FF5722;
+            color: #424242;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .title {
+            text-align: center;
+            color: #FF5722;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #FFF3E0;
+            border-radius: 8px;
+        }
+
+        .section {
+            background: white;
+            border: 2px solid #FF5722;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #FF5722;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .date-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-section-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .date-left {
+            flex: 1;
+        }
+
+        .solicitante-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background: #FFF3E0;
+            border-radius: 8px;
+            border: 1px solid #FF5722;
+        }
+
+        .solicitante-title {
+            font-weight: bold;
+            color: #FF5722;
+            margin-bottom: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #FF5722;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #FF5722;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            border: 2px solid #E0E0E0;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #FF5722;
+        }
+
+        input[type="text"]:disabled, input[type="number"]:disabled {
+            background: #F5F5F5;
+            color: #757575;
+        }
+
+        .input-error {
+            border-color: #D32F2F !important;
+            background: #FFEBEE !important;
+        }
+
+        .products-section {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .product-header {
+            display: grid;
+            grid-template-columns: 4fr 1fr 1fr 3fr;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 2px solid #FF5722;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #424242;
+        }
+
+        .product-row {
+            display: grid;
+            grid-template-columns: 4fr 1fr 1fr 3fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .product-input {
+            width: 100%;
+        }
+
+        .readonly-input {
+            background: #F5F5F5 !important;
+            color: #757575 !important;
+        }
+
+        .suggestions {
+            position: fixed;
+            background: white;
+            border: 2px solid #FF5722;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            min-width: 200px;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .suggestion-item:hover, .suggestion-item.selected {
+            background: #FF5722;
+            color: white;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background: #FFC107;
+            color: #424242;
+        }
+
+        .btn-primary:hover {
+            background: #FFD54F;
+        }
+
+        .btn-primary:disabled {
+            background: #E0E0E0;
+            color: #9E9E9E;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: #F44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #E53935;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        label {
+            font-weight: 500;
+            color: #424242;
+        }
+
+        .date-input {
+            width: 60px;
+        }
+
+        .year-input {
+            width: 80px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* Cambiado de flex a none */
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .loading-overlay.show {
+            display: flex; /* Solo mostrar cuando tenga la clase show */
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF5722;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1 class="title">Cabaña84 - Lista de Requerimientos Diaria</h1>
+
+        <!-- Sección de Fecha -->
+        <div class="section">
+            <div class="section-title">Fecha y Solicitante</div>
+            <div class="date-section-container">
+                <div class="date-left">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="useToday" class="checkbox" checked>
+                        <label for="useToday">Hoy</label>
+                    </div>
+                    <div class="date-controls">
+                        <div class="input-group">
+                            <label for="dayInput">Día:</label>
+                            <input type="text" id="dayInput" class="date-input" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label for="monthInput">Mes:</label>
+                            <input type="text" id="monthInput" class="date-input" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label for="yearInput">Año:</label>
+                            <input type="text" id="yearInput" class="year-input" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="solicitante-container">
+                    <div class="solicitante-title">Solicitante:</div>
+                    <div class="radio-option">
+                        <input type="radio" id="cocinero" name="solicitante" value="Cocinero">
+                        <label for="cocinero">Cocinero</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="hornero" name="solicitante" value="Hornero" checked>
+                        <label for="hornero">Hornero</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="bar" name="solicitante" value="Bar">
+                        <label for="bar">Bar</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Productos -->
+        <div class="section">
+            <div class="section-title">Productos</div>
+            <div class="products-section" id="productsSection">
+                <div class="product-header">
+                    <div>PRODUCTO</div>
+                    <div>CANTIDAD</div>
+                    <div>UNIDAD</div>
+                    <div>PROVEEDOR</div>
+                </div>
+                <div id="productRows"></div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="buttons-container">
+            <button class="btn btn-danger" onclick="limpiarTodo()">LIMPIAR TODO</button>
+            <button class="btn btn-primary" id="btnGenerar" onclick="generarExcelYEnviar()">GENERAR EXCEL Y ENVIAR</button>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Generando Excel y enviando correo...</p>
+        </div>
+    </div>
+
+    <script>
+        // Datos de productos
+        const datosProductos = {
+            "CONZAC-ARTIAGA CHICKEN EIRL": [
+                ["LECHUGA AMERICANA", "DOC"],
+                ["LECHUGA ROMANA", "UND"],
+                ["BETERRAGA", "ATD"],
+                ["CEBOLLA CHINA", "SOLES"],
+                ["CULANTRO", "SOLES"],
+                ["HIERBA LUISA", "SOLES"],
+                ["HIERBA BUENA", "SOLES"],
+                ["MENTA", "SOLES"],
+                ["APIO", "UND"],
+                ["PORO", "UND"],
+                ["BROCOLI","UND"],
+                ["RABANITO","ATADO"],
+                ["CHOCLO SERRANO","UND"],
+                ["TOMATO","KILO"],
+                ["ZANAHORIA","KILO"],
+                ["CEBOLLA ROJA","KILO"],
+                ["LIMON","KILO"],
+                ["ROCOTO","KILO"],
+                ["PIMIENTO","KILO"],
+                ["KION","KILO"],
+                ["VAINITA","KILO"],
+                ["QUESO PASTEURIZADO","KILO"],
+                ["PALTA","KILO"],
+                ["WANTAN","UND"],
+                ["PLATANO","MANO"],
+                ["PAPA NATIVA","KILO"],
+                ["PAPA YUNGAI","KILO"],
+                ["BOLSA 12*16","PQT"],
+                ["BOLSA 16*19","PQT"],
+                ["BOLSA 19*20","PQT"],
+                ["HUESO DE RES","KILO"],
+                ["MENUDENCIAS","KILO"],
+                ["ARROZ","SACO"],
+                ["DETERGENTE","PQT"],
+                ["CARAMELOS","PQT"],
+                ["MARACUYA FRUTA","PQT"]
+            ],
+            "LADY JCP E.I.R.L.": [
+                ["MOLLEJITAS DE POLLO", "UND"],
+                ["ALITAS", "UND"],
+                ["FILETE DE POLLO PECHO X 250 GR", "UND"],
+                ["FILETE DE POLLO PIERNA X 200 GR", "UND"],
+                ["CHURRASCO", "UND"],
+                ["MENJUNJE HORNO", "KILO"],
+                ["CORAZON EN BOLA", "KILO"],
+                ["ADEREZO DE ANTICUCHO", "KILO"],
+                ["BROASTER", "UND"],
+                ["HARINA BROASTER", "KILO"],
+                ["POLLO BRASA","UND"],
+                ["POLLO SALTADO","KILO"],
+                ["CREMA DE AJI X KILO","KILO"],
+                ["CREMA VINAGRETA X KILO","KILO"],
+                ["CREMA DE MAYONESA X KILO","KILO"],
+                ["CONTENEDOR #15","CAJA"],
+                ["CONTENEDOR #13","CAJA"],
+                ["SAL FINA","KILO"],
+                ["VINAGRETA CESAR","KILO"],
+                ["MENJUJE COCINA","KILO"],
+                ["BASE DE CHAUFA","KILO"],
+                ["SALSA OSTION","KILO"],
+                ["RABANITO INCRUSTRADO","KILO"],
+                ["AJI AMARILLO","KILO"],
+                ["AJO MOLIDO","KILO"],
+                ["AJINOMOTO","KILO"],
+                ["VINAGRE FIRME","UND"],
+                ["SALSA PESTO","UND"],
+                ["CHICHA MORADA","LITRO"],
+                ["PULPA MARACUYA","KILO"],
+                ["KETCHUP","CAJA"],
+                ["MOSTAZA","CAJA"],
+                ["HUEVO POR PLANCHA","UND"],
+                ["CHIMICHURRI","KILO"],
+                ["AZUCAR RUBIA","KILO"],
+                ["ACEITE","BALDE"],
+                ["CHULETA","UND"],
+                ["CHORIZA","UND"],
+                ["LOMO FINO","UND"],
+                ["SALSA DULCE","GALON"],
+                ["SALSA PICANTE","GALON"],
+                ["MARKETING",""]
+            ],
+            "JORDY": [
+                ["BIFE ANGOSTO X 250 GR", "UND"],
+                ["PICAÑA","UND"]
+            ]
+        };
+
+        // Crear mapeo de productos
+        const productoAProveedor = {};
+        const todosProductos = [];
+
+        for (const [proveedor, productos] of Object.entries(datosProductos)) {
+            for (const [producto, unidad] of productos) {
+                todosProductos.push([producto, unidad, proveedor]);
+                productoAProveedor[producto] = [unidad, proveedor];
+            }
+        }
+
+        let filasProductos = [];
+        let contadorFilas = 0;
+        let archivoExcelBlob = null;
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_W1terg13U4tVzeWq2Caa6hTlc6UcQlvEcj4DG5BxkgToZEA5TFdfZaeJN3F-LgC9/exec';
+        // Inicializar la aplicación
+        
+        function inicializar() {
+            configurarFecha();
+            agregarFilaProducto();
+        }
+
+        function configurarFecha() {
+            const ahora = new Date();
+            const dia = ahora.getDate().toString().padStart(2, '0');
+            const mes = (ahora.getMonth() + 1).toString().padStart(2, '0');
+            const año = ahora.getFullYear().toString();
+
+            document.getElementById('dayInput').value = dia;
+            document.getElementById('monthInput').value = mes;
+            document.getElementById('yearInput').value = año;
+
+            document.getElementById('useToday').addEventListener('change', alternarEntradaFecha);
+        }
+
+        function alternarEntradaFecha() {
+            const usarHoy = document.getElementById('useToday').checked;
+            const diaInput = document.getElementById('dayInput');
+            const mesInput = document.getElementById('monthInput');
+            const añoInput = document.getElementById('yearInput');
+
+            if (usarHoy) {
+                const ahora = new Date();
+                diaInput.value = ahora.getDate().toString().padStart(2, '0');
+                mesInput.value = (ahora.getMonth() + 1).toString().padStart(2, '0');
+                añoInput.value = ahora.getFullYear().toString();
+                
+                diaInput.disabled = true;
+                mesInput.disabled = true;
+                añoInput.disabled = true;
+            } else {
+                diaInput.disabled = false;
+                mesInput.disabled = false;
+                añoInput.disabled = false;
+            }
+        }
+
+        function validarCantidad(valor) {
+            if (valor === '') return true;
+            const numero = parseFloat(valor);
+            return !isNaN(numero) && numero >= 0;
+        }
+
+        function agregarFilaProducto() {
+            contadorFilas++;
+            const contenedor = document.getElementById('productRows');
+            
+            const filaDiv = document.createElement('div');
+            filaDiv.className = 'product-row';
+            filaDiv.id = `fila_${contadorFilas}`;
+
+            filaDiv.innerHTML = `
+                <div style="position: relative;">
+                    <input type="text" class="product-input" id="producto_${contadorFilas}" 
+                           placeholder="Buscar producto..." autocomplete="off">
+                    <div id="sugerencias_${contadorFilas}" class="suggestions hidden"></div>
+                </div>
+                <input type="text" class="product-input" id="cantidad_${contadorFilas}" 
+                       placeholder="0">
+                <input type="text" class="product-input readonly-input" id="unidad_${contadorFilas}" 
+                       readonly>
+                <input type="text" class="product-input readonly-input" id="proveedor_${contadorFilas}" 
+                       readonly>
+            `;
+
+            contenedor.appendChild(filaDiv);
+
+            const filaData = {
+                id: contadorFilas,
+                elemento: filaDiv,
+                productoInput: document.getElementById(`producto_${contadorFilas}`),
+                cantidadInput: document.getElementById(`cantidad_${contadorFilas}`),
+                unidadInput: document.getElementById(`unidad_${contadorFilas}`),
+                proveedorInput: document.getElementById(`proveedor_${contadorFilas}`),
+                sugerenciasDiv: document.getElementById(`sugerencias_${contadorFilas}`)
+            };
+
+            filasProductos.push(filaData);
+
+            // Configurar eventos
+            configurarAutocompletado(filaData);
+            configurarValidacionCantidad(filaData);
+
+            // Scroll al final
+            filaDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function configurarAutocompletado(filaData) {
+            const { productoInput, unidadInput, proveedorInput, sugerenciasDiv } = filaData;
+            let indiceSeleccionado = -1;
+
+            productoInput.addEventListener('input', function() {
+                const valor = this.value.toLowerCase();
+                
+                if (valor === '') {
+                    ocultarSugerencias();
+                    unidadInput.value = '';
+                    proveedorInput.value = '';
+                    return;
+                }
+
+                const coincidencias = todosProductos.filter(([producto]) => 
+                    producto.toLowerCase().includes(valor)
+                );
+
+                if (coincidencias.length > 0) {
+                    mostrarSugerencias(coincidencias, filaData);
+                } else {
+                    ocultarSugerencias();
+                }
+            });
+
+            productoInput.addEventListener('blur', function() {
+                setTimeout(() => ocultarSugerencias(), 150);
+            });
+
+            productoInput.addEventListener('keydown', function(e) {
+                const elementos = sugerenciasDiv.querySelectorAll('.suggestion-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    indiceSeleccionado = Math.min(indiceSeleccionado + 1, elementos.length - 1);
+                    actualizarSeleccion();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    indiceSeleccionado = Math.max(indiceSeleccionado - 1, 0);
+                    actualizarSeleccion();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (indiceSeleccionado >= 0 && elementos[indiceSeleccionado]) {
+                        seleccionarProducto(elementos[indiceSeleccionado].textContent, filaData);
+                    }
+                } else if (e.key === 'Escape') {
+                    ocultarSugerencias();
+                }
+            });
+
+            productoInput.addEventListener('focus', function() {
+                // Actualizar posición cuando el input recibe foco
+                if (!sugerenciasDiv.classList.contains('hidden')) {
+                    const rect = this.getBoundingClientRect();
+                    sugerenciasDiv.style.left = rect.left + 'px';
+                    sugerenciasDiv.style.top = (rect.bottom + 2) + 'px';
+                    sugerenciasDiv.style.width = rect.width + 'px';
+                }
+            });
+
+            // Actualizar posición cuando se hace scroll o resize
+            window.addEventListener('scroll', () => {
+                if (!sugerenciasDiv.classList.contains('hidden')) {
+                    const rect = productoInput.getBoundingClientRect();
+                    sugerenciasDiv.style.left = rect.left + 'px';
+                    sugerenciasDiv.style.top = (rect.bottom + 2) + 'px';
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                if (!sugerenciasDiv.classList.contains('hidden')) {
+                    const rect = productoInput.getBoundingClientRect();
+                    sugerenciasDiv.style.left = rect.left + 'px';
+                    sugerenciasDiv.style.top = (rect.bottom + 2) + 'px';
+                    sugerenciasDiv.style.width = rect.width + 'px';
+                }
+            });
+
+            function mostrarSugerencias(coincidencias, filaData) {
+                sugerenciasDiv.innerHTML = '';
+                sugerenciasDiv.classList.remove('hidden');
+                
+                // Calcular posición fija en relación a la ventana
+                const rect = filaData.productoInput.getBoundingClientRect();
+                sugerenciasDiv.style.left = rect.left + 'px';
+                sugerenciasDiv.style.top = (rect.bottom + 2) + 'px';
+                sugerenciasDiv.style.width = rect.width + 'px';
+                
+                coincidencias.slice(0, 6).forEach((coincidencia, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = coincidencia[0];
+                    div.addEventListener('click', () => seleccionarProducto(coincidencia[0], filaData));
+                    sugerenciasDiv.appendChild(div);
+                });
+
+                indiceSeleccionado = -1;
+            }
+
+            function actualizarSeleccion() {
+                const elementos = sugerenciasDiv.querySelectorAll('.suggestion-item');
+                elementos.forEach((el, index) => {
+                    el.classList.toggle('selected', index === indiceSeleccionado);
+                });
+            }
+
+            function ocultarSugerencias() {
+                sugerenciasDiv.classList.add('hidden');
+                indiceSeleccionado = -1;
+            }
+        }
+
+        function seleccionarProducto(producto, filaData) {
+            // Verificar duplicados
+            if (verificarProductoDuplicado(producto, filaData.id)) {
+                alert(`El producto '${producto}' ya ha sido ingresado en otra línea.`);
+                filaData.productoInput.value = '';
+                filaData.unidadInput.value = '';
+                filaData.proveedorInput.value = '';
+                return;
+            }
+
+            filaData.productoInput.value = producto;
+            filaData.sugerenciasDiv.classList.add('hidden');
+
+            if (productoAProveedor[producto]) {
+                const [unidad, proveedor] = productoAProveedor[producto];
+                filaData.unidadInput.value = unidad;
+                filaData.proveedorInput.value = proveedor;
+            }
+
+            filaData.cantidadInput.focus();
+        }
+
+        function verificarProductoDuplicado(producto, idFilaActual) {
+            return filasProductos.some(fila => 
+                fila.id !== idFilaActual && 
+                fila.productoInput.value === producto && 
+                fila.cantidadInput.value.trim()
+            );
+        }
+
+        function configurarValidacionCantidad(filaData) {
+            filaData.cantidadInput.addEventListener('input', function() {
+                const valor = this.value;
+                
+                if (!validarCantidad(valor)) {
+                    this.classList.add('input-error');
+                } else {
+                    this.classList.remove('input-error');
+                    
+                    // Si es la última fila y tiene producto y cantidad, agregar nueva fila
+                    if (filaData === filasProductos[filasProductos.length - 1] && 
+                        valor.trim() && filaData.productoInput.value.trim()) {
+                        agregarFilaProducto();
+                    }
+                }
+            });
+        }
+
+        function limpiarTodo() {
+            // Restablecer fecha
+            document.getElementById('useToday').checked = true;
+            alternarEntradaFecha();
+
+            // Restablecer solicitante a Hornero
+            document.getElementById('hornero').checked = true;
+
+            // Eliminar todas las filas excepto la primera
+            const contenedor = document.getElementById('productRows');
+            contenedor.innerHTML = '';
+            
+            filasProductos = [];
+            contadorFilas = 0;
+            
+            
+            // Agregar nueva fila limpia
+            agregarFilaProducto();
+        }
+
+        function validarCamposFecha() {
+            const dia = parseInt(document.getElementById('dayInput').value);
+            const mes = parseInt(document.getElementById('monthInput').value);
+            const año = parseInt(document.getElementById('yearInput').value);
+
+            if (isNaN(dia) || dia < 1 || dia > 31) {
+                return { valido: false, mensaje: 'Día debe estar entre 1 y 31' };
+            }
+            if (isNaN(mes) || mes < 1 || mes > 12) {
+                return { valido: false, mensaje: 'Mes debe estar entre 1 y 12' };
+            }
+            if (isNaN(año) || año < 1900 || año > 9999) {
+                return { valido: false, mensaje: 'Año debe estar entre 1900 y 9999' };
+            }
+
+            // Validar fecha real
+            const fecha = new Date(año, mes - 1, dia);
+            if (fecha.getDate() !== dia || fecha.getMonth() !== mes - 1 || fecha.getFullYear() !== año) {
+                return { valido: false, mensaje: 'Fecha inválida' };
+            }
+
+            return { valido: true };
+        }
+
+        function obtenerSolicitante() {
+            const radios = document.getElementsByName('solicitante');
+            for (const radio of radios) {
+                if (radio.checked) {
+                    return radio.value;
+                }
+            }
+            return 'Hornero'; // Default
+        }
+
+        function mostrarLoading() {
+            document.getElementById('loadingOverlay').classList.add('show');
+            document.getElementById('btnGenerar').disabled = true;
+        }
+
+        function ocultarLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+            document.getElementById('btnGenerar').disabled = false;
+        }
+
+        async function generarExcelYEnviar() {
+            mostrarLoading();
+
+            try {
+                // Validar fecha
+                const validacionFecha = validarCamposFecha();
+                if (!validacionFecha.valido) {
+                    alert(validacionFecha.mensaje);
+                    ocultarLoading();
+                    return;
+                }
+
+                const dia = document.getElementById('dayInput').value.padStart(2, '0');
+                const mes = document.getElementById('monthInput').value.padStart(2, '0');
+                const año = document.getElementById('yearInput').value.slice(-2);
+                const cadenaFecha = `${dia}/${mes}/${año}`;
+                const solicitante = obtenerSolicitante();
+
+                // Recopilar productos
+                const filasCompletas = [];
+                for (const fila of filasProductos) {
+                    const producto = fila.productoInput.value.trim();
+                    const unidad = fila.unidadInput.value.trim();
+                    const proveedor = fila.proveedorInput.value.trim();
+                    const cantidad = fila.cantidadInput.value.trim();
+
+                    if (producto && cantidad) {
+                        // Validar producto
+                        if (!productoAProveedor[producto]) {
+                            alert(`Producto '${producto}' no es válido`);
+                            ocultarLoading();
+                            return;
+                        }
+
+                        const cantidadNumerica = parseFloat(cantidad);
+                        if (isNaN(cantidadNumerica) || cantidadNumerica < 0) {
+                            alert(`Cantidad inválida para ${producto}`);
+                            ocultarLoading();
+                            return;
+                        }
+
+                        filasCompletas.push({
+                            producto,
+                            unidad,
+                            proveedor,
+                            cantidad: cantidadNumerica
+                        });
+                    }
+                }
+
+                if (filasCompletas.length === 0) {
+                    alert('No hay productos para generar');
+                    ocultarLoading();
+                    return;
+                }
+
+                // Generar Excel
+                const nombreArchivo = await crearExcel(cadenaFecha, solicitante, filasCompletas);
+                
+                // Enviar correo
+                await enviarCorreo(cadenaFecha, solicitante, nombreArchivo);
+                
+                alert(`Excel generado y correo enviado exitosamente!`);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud: ' + error.message);
+            } finally {
+                ocultarLoading();
+            }
+        }
+
+
+        async function crearExcel(cadenaFecha, solicitante, productos) {
+            const wb = XLSX.utils.book_new();
+            
+            // Separar productos por proveedor
+            const productosProveedor = {};
+            productos.forEach(item => {
+                if (!productosProveedor[item.proveedor]) {
+                    productosProveedor[item.proveedor] = {};
+                }
+                productosProveedor[item.proveedor][item.producto] = item;
+            });
+
+            // Crear datos para la hoja
+            const datos = [];
+            const proveedores = Object.keys(datosProductos);
+            const numProveedores = proveedores.length;
+            const columnasTotal = numProveedores * 3;
+
+            // Título principal
+            const filaTitulo = new Array(columnasTotal).fill('');
+            filaTitulo[0] = 'Cabaña84 - Lista de Requerimientos Diaria';
+            datos.push(filaTitulo);
+
+            // Fecha
+            const filaFecha = new Array(columnasTotal).fill('');
+            filaFecha[0] = `FECHA: ${cadenaFecha}`;
+            datos.push(filaFecha);
+
+            // Solicitante
+            const filaSolicitante = new Array(columnasTotal).fill('');
+            filaSolicitante[0] = `SOLICITANTE: ${solicitante}`;
+            datos.push(filaSolicitante);
+
+            // Fila vacía
+            datos.push(new Array(columnasTotal).fill(''));
+
+            // Headers de proveedores
+            const filaProveedores = new Array(columnasTotal).fill('');
+            let colInicio = 0;
+            proveedores.forEach(proveedor => {
+                filaProveedores[colInicio] = proveedor;
+                colInicio += 3;
+            });
+            datos.push(filaProveedores);
+
+            // Headers de columnas
+            const filaHeaders = new Array(columnasTotal).fill('');
+            colInicio = 0;
+            proveedores.forEach(() => {
+                filaHeaders[colInicio] = 'PRODUCTO';
+                filaHeaders[colInicio + 1] = 'UNIDAD';
+                filaHeaders[colInicio + 2] = 'CANTIDAD';
+                colInicio += 3;
+            });
+            datos.push(filaHeaders);
+
+            // Encontrar el número máximo de productos por proveedor
+            const maxProductos = Math.max(...proveedores.map(p => datosProductos[p].length));
+
+            // Llenar datos de productos
+            for (let i = 0; i < maxProductos; i++) {
+                const fila = new Array(columnasTotal).fill('');
+                colInicio = 0;
+                
+                proveedores.forEach(nombreProveedor => {
+                    const productosDelProveedor = datosProductos[nombreProveedor];
+                    if (i < productosDelProveedor.length) {
+                        const [nombreProducto, unidad] = productosDelProveedor[i];
+                        fila[colInicio] = nombreProducto;
+                        fila[colInicio + 1] = unidad;
+                        
+                        // Buscar cantidad si existe
+                        let cantidad = '';
+                        if (productosProveedor[nombreProveedor] && 
+                            productosProveedor[nombreProveedor][nombreProducto]) {
+                            cantidad = productosProveedor[nombreProveedor][nombreProducto].cantidad;
+                        }
+                        fila[colInicio + 2] = cantidad;
+                    }
+                    colInicio += 3;
+                });
+                
+                datos.push(fila);
+            }
+
+            // Crear worksheet
+            const ws = XLSX.utils.aoa_to_sheet(datos);
+
+            // Configurar anchos de columna
+            const anchos = [];
+            for (let i = 0; i < columnasTotal; i++) {
+                anchos.push({ wch: 25 });
+            }
+            ws['!cols'] = anchos;
+
+            // Configurar merges
+            const merges = [];
+            
+            // Merge para título
+            merges.push({
+                s: { r: 0, c: 0 },
+                e: { r: 0, c: columnasTotal - 1 }
+            });
+            
+            // Merge para fecha
+            merges.push({
+                s: { r: 1, c: 0 },
+                e: { r: 1, c: columnasTotal - 1 }
+            });
+
+            // Merge para solicitante
+            merges.push({
+                s: { r: 2, c: 0 },
+                e: { r: 2, c: columnasTotal - 1 }
+            });
+            
+            // Merges para proveedores
+            colInicio = 0;
+            proveedores.forEach(() => {
+                merges.push({
+                    s: { r: 4, c: colInicio },
+                    e: { r: 4, c: colInicio + 2 }
+                });
+                colInicio += 3;
+            });
+            
+            ws['!merges'] = merges;
+
+            // Agregar worksheet al workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Requerimientos');
+
+            // Guardar archivo y crear blob
+            const nombreArchivo = `Requerimientos_${cadenaFecha.replace(/\//g, '_')}_${solicitante}.xlsx`;
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            archivoExcelBlob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            
+            // Descargar archivo
+            const url = URL.createObjectURL(archivoExcelBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombreArchivo;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            return nombreArchivo;
+        }
+
+        async function enviarCorreo(fecha, solicitante, nombreArchivo) {
+            console.log('=== INICIANDO ENVÍO DE CORREO ===');
+            console.log('Fecha:', fecha);
+            console.log('Solicitante:', solicitante);
+            console.log('Nombre archivo:', nombreArchivo);
+            console.log('URL del script:', GOOGLE_APPS_SCRIPT_URL);
+            
+            // Crear resumen de productos
+            let resumenProductos = '';
+            const productosConCantidad = [];
+            
+            filasProductos.forEach(fila => {
+                const producto = fila.productoInput.value.trim();
+                const cantidad = fila.cantidadInput.value.trim();
+                const unidad = fila.unidadInput.value.trim();
+                const proveedor = fila.proveedorInput.value.trim();
+                
+                if (producto && cantidad) {
+                    productosConCantidad.push({
+                        producto,
+                        cantidad,
+                        unidad,
+                        proveedor
+                    });
+                }
+            });
+
+            // Agrupar por proveedor
+            const productosPorProveedor = {};
+            productosConCantidad.forEach(item => {
+                if (!productosPorProveedor[item.proveedor]) {
+                    productosPorProveedor[item.proveedor] = [];
+                }
+                productosPorProveedor[item.proveedor].push(item);
+            });
+
+            // Crear resumen
+            for (const [proveedor, items] of Object.entries(productosPorProveedor)) {
+                resumenProductos += `${proveedor}:\n`;
+                items.forEach(item => {
+                    resumenProductos += `  • ${item.producto}: ${item.cantidad} ${item.unidad}\n`;
+                });
+                resumenProductos += '\n';
+            }
+
+            console.log('Resumen productos:', resumenProductos); //tutsidemon
+
+            // Convertir el blob a base64
+            const reader = new FileReader();
+            const base64Promise = new Promise((resolve, reject) => {
+                reader.onloadend = () => {
+                    try {
+                        const base64 = reader.result.split(',')[1];
+                        resolve(base64);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+            });
+            reader.readAsDataURL(archivoExcelBlob);
+            const base64content = await base64Promise;
+
+            // Crear fecha formateada para el asunto
+            const fechaFormateada = fecha.replace(/\//g, '-');
+
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: 'cabana84.bot@gmail.com, ladyjcp42@gmail.com',
+                        subject: `Requerimientos ${fechaFormateada} - ${solicitante}`,
+                        fecha: fecha,
+                        solicitante: solicitante,
+                        resumen: resumenProductos,
+                        filename: nombreArchivo,
+                        attachment: base64content
+                    })
+                });
+
+                console.log('Correo enviado exitosamente');
+                console.log('Response:', response);
+                console.log('=== ENVÍO COMPLETADO ===');
+                return { status: 200, text: 'OK' };
+                
+            } catch (error) {
+                console.error('Error al enviar correo:', error);
+                throw new Error(`Error al enviar el correo: ${error.message}`);
+            }
+        }
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', inicializar);
+    </script>
+</body>
+</html>
